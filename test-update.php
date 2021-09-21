@@ -1,14 +1,14 @@
 <?php
 /**
  * @package Test Update
- * @version 1.0
+ * @version 1.1
  */
 /*
 Plugin Name: test Update
 Plugin URI: https://yata.fr/
 Description: Test
 Author: Tom
-Version: 1.0
+Version: 1.1
 */
 
 include_once(plugin_dir_path(__FILE__).'updater/update.php');
