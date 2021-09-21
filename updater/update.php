@@ -11,6 +11,7 @@ class Test_Update {
     private $github_response;
 
   public function __construct( $file ) {
+    //set_site_transient('update_plugins', null);
     $this->file = $file;
     add_action( 'admin_init', array( $this, 'set_plugin_properties' ) );
     return $this;
@@ -41,6 +42,7 @@ private function get_repository_info() {
         if( $this->authorize_token ) { // Is there an access token?
             $request_uri = add_query_arg( 'access_token', $this->authorize_token, $request_uri ); // Append it
         }        
+        //die($request_uri);
         $response = json_decode( wp_remote_retrieve_body( wp_remote_get( $request_uri ) ), true ); // Get JSON and parse it
         if( is_array( $response ) ) { // If it is an array
             $response = current( $response ); // Get the first item
@@ -53,9 +55,11 @@ private function get_repository_info() {
 }
 
 public function modify_transient( $transient ) {
-        if( property_exists( $transient, 'checked') ) { // Check if transient has a checked property
-            if( $checked = $transient->checked ) { // Did WordPress check for updates?
+    //var_dump($transient);
+    if( property_exists( $transient, 'checked') ) { // Check if transient has a checked property
+        if( $checked = $transient->checked ) { // Did WordPress check for updates?
             $this->get_repository_info(); // Get the repo info
+            //var_dump($this->github_response);
             $out_of_date = version_compare( $this->github_response['tag_name'], $checked[$this->basename], 'gt' ); // Check if we're out of date
                 if( $out_of_date ) {
                     $new_files = $this->github_response['zipball_url']; // Get the ZIP
@@ -115,7 +119,7 @@ public function modify_transient( $transient ) {
 
     public function initialize() {
         add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'modify_transient' ), 10, 1 );
-        add_filter( 'plugins_api', array( $this, 'plugin_popup' ), 10, 3);
+        //add_filter( 'plugins_api', array( $this, 'plugin_popup' ), 10, 3);
         add_filter( 'upgrader_post_install', array( $this, 'after_install' ), 10, 3 );
     }
 
